@@ -2,10 +2,10 @@ const { handler }  = require( "../queries/updateUser");
 const updateUser = async()=>{
     try{
         let resp = await handler("olVYX2q4SOBUScjFVCGhx", "8177219",{
-            email: "james.may@turnoutnow.com",
-            firstName: "James",
-            lastName: "May",
-            jobTitle:"Tester"
+            email: "william.james@turnoutnow.com",
+            firstName: "William",
+            lastName: "James",
+            jobTitle:"Tech Lead"
         })
         console.log(resp)
     }catch(err){

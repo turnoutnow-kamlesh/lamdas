@@ -128,12 +128,12 @@ exports.batchGetParticipants = async(eventId,ids) =>{
         initDynamoDBClient();
     
         let str = "SET"
-        let attrNames = {}
+        let attrNames = {'#updatedAt':'updatedAt'}
         for(let j of Object.keys(data)){
             str+= ` #${j} = :${j},`
             attrNames[`#${j}`] = j
         }
-        let attrValues = {}
+        let attrValues = {':updatedAt':new Date().toISOString()}
         for(let x in data){
             attrValues[`:${x}`] = data[x]
         }
@@ -144,11 +144,11 @@ exports.batchGetParticipants = async(eventId,ids) =>{
                 "PK": `EVENT#${eventId}#USER#${userId}`,
                 "SK": `EVENT#${eventId}#USER#${userId}`
             }),
-            UpdateExpression:str.slice(0,-1),
+            UpdateExpression:`${str} #updatedAt = :updatedAt`,
             ExpressionAttributeNames: attrNames,
             ExpressionAttributeValues:marshall(attrValues)
         };
-    
+        console.log(input)
         return await dynamoDbclient.send(new UpdateItemCommand(input));
     }
 
@@ -165,16 +165,18 @@ exports.batchGetParticipants = async(eventId,ids) =>{
                 "SK": `MEETING#${meetingId}`
             }),
             // UpdateExpression: "SET #firstName = :firstName, #lastName = :lastName, #jobTitle = :jobTitle, #company = :company, #country = :country, #profileImageUrl = :profileImageUrl, #updatedAt = :updatedAt",
-            UpdateExpression: "SET #checkIns = :checkIns, #createdAt = if_not_exists(#createdAt, :createdAt) ADD #count :count",
+            UpdateExpression: "SET #checkIns = :checkIns, #createdAt = if_not_exists(#createdAt, :createdAt) ADD #count :count, #updatedAt = :updatedAt",
             ExpressionAttributeNames: {
                 "#checkIns": "checkIns",
                 "#count": "count",
                 "#createdAt":"createdAt",
+                "#updatedAt":"updatedAt"
             },
             ExpressionAttributeValues: marshall({
                 ":checkIns": data,
                 ":count" : 1,
-                ":createdAt":new Date().toISOString()
+                ":createdAt":new Date().toISOString(),
+                ":updatedAt":new Date().toISOString()
                 // ":company": company,
                 // ":country": country,
                 // ":profileImageUrl": profileImageUrl,
