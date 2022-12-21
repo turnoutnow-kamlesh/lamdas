@@ -165,16 +165,18 @@ exports.batchGetParticipants = async(eventId,ids) =>{
                 "SK": `MEETING#${meetingId}`
             }),
             // UpdateExpression: "SET #firstName = :firstName, #lastName = :lastName, #jobTitle = :jobTitle, #company = :company, #country = :country, #profileImageUrl = :profileImageUrl, #updatedAt = :updatedAt",
-            UpdateExpression: "SET #checkIns = :checkIns, #createdAt = if_not_exists(#createdAt, :createdAt) ADD #count :count, #updatedAt = :updatedAt",
+            UpdateExpression: "SET #checkIns = :checkIns,  #updatedAt = :updatedAt, #status = :status, #createdAt = if_not_exists(#createdAt, :createdAt) ADD #count :count",
             ExpressionAttributeNames: {
                 "#checkIns": "checkIns",
                 "#count": "count",
                 "#createdAt":"createdAt",
-                "#updatedAt":"updatedAt"
+                "#updatedAt":"updatedAt",
+                "#status":"status"
             },
             ExpressionAttributeValues: marshall({
                 ":checkIns": data,
                 ":count" : 1,
+                ":status":"CANCELED",
                 ":createdAt":new Date().toISOString(),
                 ":updatedAt":new Date().toISOString()
                 // ":company": company,
